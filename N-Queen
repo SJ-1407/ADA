@@ -1,0 +1,84 @@
+from typing import List
+import time
+
+class Solution:
+    def __init__(self):
+        self.row_check = {}
+        self.upper_diagonal_check = {}
+        self.bottom_diagonal_check = {}
+
+    def store_ans(self, board: List[List[str]], n: int, ans: List[List[str]]):
+        temp = []
+        for i in range(n):
+            output = ""
+            for j in range(n):
+                output += board[i][j]
+            temp.append(output)
+        ans.append(temp)
+
+    def is_safe(self, board: List[List[str]], n: int, row: int, col: int):
+        if row in self.row_check and self.row_check[row]:
+            return False
+        if (n - 1 + col - row) in self.upper_diagonal_check and self.upper_diagonal_check[n - 1 + col - row]:
+            return False
+        if (row + col) in self.bottom_diagonal_check and self.bottom_diagonal_check[row + col]:
+            return False
+        return True
+
+    def solve(self, board: List[List[str]], n: int, col: int, ans: List[List[str]]):
+        if col == n:
+            self.store_ans(board, n, ans)
+            return
+        for row in range(n):
+            if self.is_safe(board, n, row, col):
+                board[row][col] = 'Q' + str(col + 1)
+                self.row_check[row] = True
+                self.upper_diagonal_check[n - 1 + col - row] = True
+                self.bottom_diagonal_check[row + col] = True
+
+                self.solve(board, n, col + 1, ans)
+
+                board[row][col] = '.'
+                self.row_check[row] = False
+                self.upper_diagonal_check[n - 1 + col - row] = False
+                self.bottom_diagonal_check[row + col] = False
+
+    def solve_n_queens(self, n: int) -> List[List[str]]:
+        board = [['.' for _ in range(n)] for _ in range(n)]
+        ans = []
+        col = 0
+
+        start_time = time.time()
+        self.solve(board, n, col, ans)
+        end_time = time.time()
+
+        print("Start Time:", start_time)
+        print("End Time:", end_time)
+        print("Time Taken:", end_time - start_time)
+
+        return ans
+
+# Take input from the user
+n = int(input("Enter the value of n: "))
+sol = Solution()
+result = sol.solve_n_queens(n)
+for row in result:
+    for line in row:
+        print(line)
+    print()
+
+//OUTPUT
+Start Time: 1703010015.2496665
+End Time: 1703010015.2497182
+Time Taken: 5.173683166503906e-05
+..Q3.
+Q1...
+...Q4
+.Q2..
+
+.Q2..
+...Q4
+Q1...
+..Q3.
+
+
