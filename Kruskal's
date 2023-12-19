@@ -1,0 +1,93 @@
+import time
+
+class Graph:  
+    def __init__(self, vertices):  
+        self.vertices = vertices  
+        self.edges = []  
+        self.adjacency_list = {v: [] for v in vertices}  
+
+    def add_Edge(self, u, v, weight):  
+        self.edges.append((u, v, weight))  
+        self.adjacency_list[u].append((v, weight))  
+        self.adjacency_list[v].append((u, weight))  
+
+    def find_parent(self, parent, i):  
+        if parent[i] == i:  
+            return i  
+        return self.find_parent(parent, parent[i])  
+
+    def union(self, parent, rank, x, y):  
+        root_x = self.find_parent(parent, x)  
+        root_y = self.find_parent(parent, y)  
+        if rank[root_x] < rank[root_y]:  
+            parent[root_x] = root_y  
+        elif rank[root_x] > rank[root_y]:  
+            parent[root_y] = root_x  
+        else:  
+            parent[root_y] = root_x  
+            rank[root_x] += 1  
+
+    def kruskal(self):  
+        start_time = time.time()  # Record start time
+        minimum_spanning_tree = set()  
+        parent = {}  
+        rank = {}  
+        for v in self.vertices:  
+            parent[v] = v  
+            rank[v] = 0  
+        sorted_edges = sorted(self.edges, key=lambda x: x[2])  
+        for edge in sorted_edges:  
+            u, v, weight = edge  
+            root_u = self.find_parent(parent, u)  
+            root_v = self.find_parent(parent, v)  
+            if root_u != root_v:  
+                minimum_spanning_tree.add(edge)  
+                self.union(parent, rank, root_u, root_v)  
+        end_time = time.time()  # Record end time
+        time_taken = end_time - start_time  # Calculate time taken
+        print("Start Time:", start_time)
+        print("End Time:", end_time)
+        print("Time Taken:", time_taken)
+        return minimum_spanning_tree  
+
+vertices = [0, 1, 2, 3, 4, 5]  
+g = Graph(vertices)  
+
+# Add edges to the graph
+# (source, destination, weight)
+edges = [
+    (0, 0, 0),
+    (0, 1, 7),
+    (0, 2, 8),
+    (1, 0, 7),
+    (1, 2, 3),
+    (1, 3, 6),
+    (1, 5, 5),
+    (2, 0, 8),
+    (2, 1, 3),
+    (2, 3, 4),
+    (2, 5, 3),
+    (3, 1, 6),
+    (3, 2, 4),
+    (3, 4, 5),
+    (3, 5, 2),
+    (4, 3, 5),
+    (4, 5, 2),
+    (5, 1, 5),
+    (5, 2, 3),
+    (5, 3, 2),
+    (5, 4, 2)
+]
+
+for edge in edges:
+    g.add_Edge(*edge)
+
+minimum_spanning_tree = g.kruskal()
+print(minimum_spanning_tree)
+
+//OUTPUT
+Start Time: 1703010310.1361504
+End Time: 1703010310.1361887
+Time Taken: 3.838539123535156e-05
+{(0, 1, 7), (1, 2, 3), (3, 5, 2), (4, 5, 2), (2, 5, 3)}
+
