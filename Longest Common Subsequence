@@ -1,0 +1,51 @@
+import time
+class Solution:
+    def solve(self, a, b, i, j, dp):
+        if i >= len(a) or j >= len(b):
+            return 0
+
+        if dp[i][j] != -1:
+            return dp[i][j]
+
+        ans = 0
+        if a[i] == b[j]:
+            ans = 1 + self.solve(a, b, i + 1, j + 1, dp)
+        else:
+            count_1 = 0 + self.solve(a, b, i + 1, j, dp)
+            count_2 = self.solve(a, b, i, j + 1, dp)
+            count_3 = self.solve(a, b, i + 1, j + 1, dp)
+            ans = max(max(count_1, count_2), count_3)
+
+        dp[i][j] = ans
+        return dp[i][j]
+
+    def longest_common_subsequence(self, text1, text2):
+        dp = [[-1] * (len(text2) + 1) for _ in range(len(text1) + 1)]  # Increase size for base case handling
+        start_time = time.time()
+        result_length = self.solve(text1, text2, 0, 0, dp)
+        end_time = time.time()
+
+        lcs = self.construct_lcs(text1, text2, dp)
+        print("Longest Common Subsequence:", lcs)
+        print("Start Time:", start_time)
+        print("End Time:", end_time)
+        print("Time Taken:", end_time - start_time)
+  return lcs
+ def construct_lcs(self, text1, text2, dp):
+        i, j = 0, 0
+        lcs = []
+        while i < len(text1) and j < len(text2):
+            if text1[i] == text2[j]:
+                lcs.append(text1[i])
+                i += 1
+                j += 1
+            elif dp[i + 1][j] > dp[i][j + 1]:
+                i += 1
+            else:
+                j += 1
+        return ''.join(lcs)
+sol = Solution()
+text1 = "abcde"
+text2 = "ace"
+result = sol.longest_common_subsequence(text1, text2)
+print("Length of Longest Common Subsequence:", len(result))
