@@ -1,0 +1,50 @@
+from queue import PriorityQueue
+import time
+
+def dijkstra(adj, start):
+    n = len(adj)
+    dist = [float('inf') for i in range(n)]
+    dist[start] = 0
+    pq = PriorityQueue()
+    pq.put((0, start))
+
+    start_time = time.time()
+
+    while not pq.empty():
+        (d, u) = pq.get()
+
+        if d > dist[u]:
+            continue
+
+        for v in range(n):
+            if adj[u][v] != 0:
+                if dist[u] + adj[u][v] < dist[v]:
+                    dist[v] = dist[u] + adj[u][v]
+                    pq.put((dist[v], v))
+
+    end_time = time.time()
+    time_taken = end_time - start_time
+
+    return dist, start_time, end_time, time_taken
+
+adj = [[0, 5, 3, 0, 0, 0],
+       [5, 0, 1, 2, 0, 0],
+       [3, 1, 0, 4, 0, 0],
+       [0, 2, 4, 0, 2, 0],
+       [0, 0, 0, 2, 0, 6],
+       [0, 0, 0, 0, 6, 0],
+       ]
+
+start_vertex = int(input("Enter the starting vertex: "))
+distances, start_time, end_time, time_taken = dijkstra(adj, start_vertex)
+
+print("Vertex\tDistance from source")
+for i in range(len(distances)):
+    print(i, "\t", distances[i])
+
+print("Start Time:", start_time)
+print("End Time:", end_time)
+print("Time Taken:", time_taken)
+
+
+
