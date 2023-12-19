@@ -1,0 +1,62 @@
+import numpy as np
+import time
+
+def strassen_matrix_multiply(A, B):
+    if len(A) == 1:
+        return [[A[0][0] * B[0][0]]]
+
+    n = len(A)
+    new_size = n // 2
+
+    # Split matrices into submatrices
+    A11 = [row[:new_size] for row in A[:new_size]]
+    A12 = [row[new_size:] for row in A[:new_size]]
+    A21 = [row[:new_size] for row in A[new_size:]]
+    A22 = [row[new_size:] for row in A[new_size:]]
+
+    B11 = [row[:new_size] for row in B[:new_size]]
+    B12 = [row[new_size:] for row in B[:new_size]]
+    B21 = [row[:new_size] for row in B[new_size:]]
+    B22 = [row[new_size:] for row in B[new_size:]]
+
+    # Calculate the seven products (P1 to P7)
+    P1 = strassen_matrix_multiply(A11, np.subtract(B12, B22))
+    P2 = strassen_matrix_multiply(np.add(A11, A12), B22)
+    P3 = strassen_matrix_multiply(np.add(A21, A22), B11)
+    P4 = strassen_matrix_multiply(A22, np.subtract(B21, B11))
+    P5 = strassen_matrix_multiply(np.add(A11, A22), np.add(B11, B22))
+    P6 = strassen_matrix_multiply(np.subtract(A12, A22), np.add(B21, B22))
+    P7 = strassen_matrix_multiply(np.subtract(A11, A21), np.add(B11, B12))
+
+    # Calculate the four quadrants of the result matrix
+    C11 = np.add(np.subtract(np.add(P5, P4), P2), P6)
+    C12 = np.add(P1, P2)
+    C21 = np.add(P3, P4)
+    C22 = np.subtract(np.subtract(np.add(P5, P1), P3), P7)
+
+    # Combine the four quadrants to get the final result matrix
+    result_matrix = [[0] * n for _ in range(n)]
+    for i in range(new_size):
+        for j in range(new_size):
+            result_matrix[i][j] = C11[i][j]
+            result_matrix[i][j + new_size] = C12[i][j]
+            result_matrix[i + new_size][j] = C21[i][j]
+            result_matrix[i + new_size][j + new_size] = C22[i][j]
+
+    return result_matrix
+
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+start_time = time.time()
+result = strassen_matrix_multiply(A.tolist(), B.tolist())
+end_time = time.time()
+
+print("Result of Strassen Matrix Multiplication:")
+print(np.array(result))
+print("Start Time:", start_time)
+print("End Time:", end_time)
+print("Time Taken:", end_time - start_time)
+
+
+
